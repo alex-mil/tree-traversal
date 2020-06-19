@@ -9,21 +9,26 @@ mod tests {
 
     #[test]
     fn graph_traversal() {
-        let a = TreeNode::new(4, None, None);
-        let b = TreeNode::new(5, None, None);
-        let c = TreeNode::new(2, Some(Box::from(a)), Some(Box::from(b)));
-        let d = TreeNode::new(3, None, None);
-        let e = TreeNode::new(1, Some(Box::from(c)), Some(Box::from(d)));
+        let mut tree = Tree::new();
 
-        let tree = Tree::new(Some(e));
+        let four = tree.add_node(TreeNode::new(4, None, None));
+        let five = tree.add_node(TreeNode::new(5, None, None));
+        let two = tree.add_node(TreeNode::new(2, Some(four), Some(five)));
+        let three = tree.add_node(TreeNode::new(3, None, None));
+        let one = tree.add_node(TreeNode::new(1, Some(two), Some(three)));
 
-        for _node in tree.iter() {
-            // _node.value *= 10;
-        }
+        tree.set_root(Some(one));
 
         let mut iterator = tree.iter();
-        while let Some(node) = iterator.next() {
-            println!("{}", node.value);
+        while let Some(i) = iterator.next(&tree) {
+            let node = tree.node_at_mut(i).expect("node to exist at given index");
+            node.value *= 10;
+        } // mutable borrow ends here
+
+        iterator = tree.iter();
+        while let Some(i) = iterator.next(&tree) {
+            let node = tree.node_at(i).expect("node to exist at given index");
+            println!("{}", node.value)
         }
     }
 }
